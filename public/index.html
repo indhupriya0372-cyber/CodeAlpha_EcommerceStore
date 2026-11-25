@@ -1,0 +1,115 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ShopKart</title>
+<style>
+:root{--bg:#f1f3f6;--card:#fff;--tx:#212121;--mu:#878787;--ln:#eee;--im:#f5f7fa}
+body.dark{--bg:#121417;--card:#1e2227;--tx:#e8e8e8;--mu:#9aa0a6;--ln:#2c3238;--im:#272c33}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx)}a{color:inherit;text-decoration:none}
+header{background:#2874f0;color:#fff;padding:10px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.logo{font-size:22px;font-weight:700;font-style:italic}
+header form{flex:1;min-width:200px;display:flex}header input{flex:1;padding:10px 14px;border:0;border-radius:2px 0 0 2px;font:inherit;color:#222}
+header form button{background:#fff;color:#2874f0;border-radius:0 2px 2px 0}
+.lb{display:inline-block;background:#fff;color:#2874f0;padding:6px 28px;font-weight:600;border-radius:2px}
+nav{background:var(--card);display:flex;gap:24px;padding:8px 20px;overflow-x:auto;box-shadow:0 1px 2px #0002}nav a{white-space:nowrap;font-weight:500}nav a.on{color:#2874f0;border-bottom:2px solid #2874f0}
+main{max-width:1200px;margin:16px auto;padding:0 12px}
+.hero{background:linear-gradient(90deg,#2874f0,#6a5af9);color:#fff;border-radius:4px;padding:28px 32px;margin-bottom:16px}.hero h1{margin:0 0 4px}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}.fl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select{padding:6px;background:var(--card);color:var(--tx);border:1px solid #8886;border-radius:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:16px}
+.pc,.box{background:var(--card);padding:14px;border-radius:2px;box-shadow:0 1px 3px #0001}.pc{position:relative}.hz{position:absolute;right:12px;top:10px;cursor:pointer;font-size:20px;z-index:1}
+.pc h4{margin:8px 0 4px;font-weight:500;height:42px;overflow:hidden}
+.im{background:var(--im);border-radius:4px;font-size:72px;text-align:center;padding:24px 0}
+.rate{background:#388e3c;color:#fff;border-radius:3px;padding:1px 6px;font-size:12px;font-weight:600}
+.m{color:var(--mu)}.g{color:#388e3c;font-weight:600}.err{color:#d32f2f}
+button{font:inherit;cursor:pointer;border:0;border-radius:2px;padding:10px 16px;background:#ff9f00;color:#fff;font-weight:600}
+.pc button{width:100%;margin-top:8px}.buy{background:#fb641b}.sm{padding:2px 10px;background:#8883;color:var(--tx)}header .sm{color:#fff}button:disabled{background:#ccc;cursor:default}
+.two{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}.two>.l{flex:2;min-width:300px}.two>.r{flex:1;min-width:260px}
+.row{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--ln)}.row .im{font-size:40px;padding:8px 14px}.row div:nth-child(2){flex:1}
+.f{width:100%;padding:10px;margin:6px 0;border:1px solid #8886;border-radius:2px;font:inherit;background:var(--card);color:var(--tx)}.f.s{width:90px;display:inline-block;margin:0}
+.auth{display:flex;max-width:760px;margin:24px auto;background:var(--card);box-shadow:0 2px 6px #0003;min-height:440px;flex-wrap:wrap}
+.side{background:#2874f0;color:#fff;padding:36px 28px;flex:1;min-width:240px}.side h2{margin:0 0 10px}.big{font-size:80px;margin-top:60px}
+.form{flex:1.4;padding:36px 32px;min-width:260px}.form button{width:100%;margin:12px 0}.form a{color:#2874f0;font-weight:600}
+.c{text-align:center;padding:50px}#t{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:10px 20px;border-radius:4px;display:none;z-index:9}
+.trk{display:flex;margin:10px 0}.trk div{flex:1;text-align:center;font-size:12px;color:var(--mu)}.trk i{display:block;width:14px;height:14px;border-radius:50%;background:#ccc;margin:0 auto 4px}.trk .on{color:#388e3c;font-weight:600}.trk .on i{background:#388e3c}
+.stats,.af{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.af{gap:8px}
+</style>
+<header><a class="logo" href="#/">ShopKart</a><form onsubmit="return go(event)"><input id="q" placeholder="Search for products, brands and more"><button>Search</button></form><span id="u"></span><a href="#/wishlist">♡ Wishlist</a><a href="#/orders">Orders</a><span id="ad"></span><a href="#/cart">🛒 Cart (<span id="cc">0</span>)</a><button class="sm" id="th" onclick="theme()">🌙</button></header>
+<nav id="nav"></nav><main id="v"></main><div id="t"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),inr=n=>'₹'+Number(n).toLocaleString('en-IN');
+const STAT=['Placed','Packed','Shipped','Out for delivery','Delivered'],CATS=['Electronics','Fashion','Home','Books'];
+let token=localStorage.t||'',uname=localStorage.u||'',admin=localStorage.a=='1',cart=JSON.parse(localStorage.c||'[]'),P=[],W=new Set(),cp='',O=[];
+const rec=()=>JSON.parse(localStorage.r||'[]');
+const api=(p,m='GET',b)=>fetch('/api'+p,{method:m,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:b&&JSON.stringify(b)}).then(async r=>{const d=await r.json();if(!r.ok)throw d.error;return d});
+const off=p=>Math.round(100-p.price*100/p.mrp),stars=p=>`<span class="rate">${p.rating} ★</span> <span class="m">(${p.reviews.toLocaleString('en-IN')})</span>`;
+const card=p=>`<div class="pc"><span class="hz" onclick="wish(${p.id})">${W.has(p.id)?'❤️':'🤍'}</span><a href="#/p/${p.id}"><div class="im">${p.emoji}</div><h4>${esc(p.name)}</h4></a>${stars(p)}<div><b>${inr(p.price)}</b> <s class="m">${inr(p.mrp)}</s> <span class="g">${off(p)}% off</span></div><button ${p.stock?'':'disabled'} onclick="add(${p.id})">${p.stock?'Add to cart':'Out of stock'}</button></div>`;
+const opt=(v,l,cur)=>`<option value="${v}"${cur==v?' selected':''}>${l}</option>`;
+function toast(m){const t=$('#t');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2000)}
+function theme(){const d=document.body.classList.toggle('dark');localStorage.d=d?1:'';$('#th').textContent=d?'☀️':'🌙'}
+if(localStorage.d){document.body.classList.add('dark');$('#th').textContent='☀️'}
+function saveCart(){localStorage.c=JSON.stringify(cart);$('#cc').textContent=cart.reduce((a,i)=>a+i.qty,0)}
+function add(id){const i=cart.find(x=>x.id==id),p=P.find(x=>x.id==id);if((i?i.qty:0)+1>p.stock)return toast('Only '+p.stock+' in stock');i?i.qty++:cart.push({id:+id,qty:1});saveCart();toast('Added to cart')}
+function qty(id,d){const i=cart.find(x=>x.id==id),p=P.find(x=>x.id==id),n=i.qty+d;if(n<1)return del(id);if(n>p.stock)return toast('Only '+p.stock+' in stock');i.qty=n;saveCart();render(1)}
+function del(id){cart=cart.filter(i=>i.id!=id);saveCart();render(1)}
+function totals(){const it=cart.map(i=>({...i,p:P.find(p=>p.id==i.id)})).filter(i=>i.p);let sub=0,mrp=0,n=0;it.forEach(i=>{sub+=i.p.price*i.qty;mrp+=i.p.mrp*i.qty;n+=i.qty});return{it,sub,mrp,n}}
+async function getQuote(){const f=c=>api('/quote','POST',{items:cart,code:c});
+  try{return await f(cp)}catch(e){let m=e;if(cp){cp='';try{const q=await f('');q.msg=m;return q}catch(e2){m=e2}}return{sub:0,shipping:0,discount:0,total:0,msg:m,bad:1}}}
+const summary=(t,q)=>`<h4 class="m">Price details</h4><p>Price (${t.n} items) <b style="float:right">${inr(t.mrp)}</b></p><p>Product discount <b class="g" style="float:right">− ${inr(t.mrp-t.sub)}</b></p>${q.discount?`<p>Coupon (${esc(q.coupon)}) <b class="g" style="float:right">− ${inr(q.discount)}</b></p>`:''}<p>Delivery <b class="${q.shipping?'':'g'}" style="float:right">${q.shipping?inr(q.shipping):'Free'}</b></p><hr><h3>Total <span style="float:right">${inr(q.total)}</span></h3><p class="g">You save ${inr(t.mrp-t.sub+q.discount)} on this order</p>${q.msg?`<p class="err">${esc(q.msg)}</p>`:''}`;
+const couponBox=()=>cp?`<p class="g">Coupon ${esc(cp)} applied <a href="#" onclick="cp='';render(1);return false" style="text-decoration:underline">Remove</a></p>`:`<div style="display:flex;gap:6px"><input class="f" id="cpn" placeholder="Coupon code" style="margin:0"><button class="sm" onclick="cp=$('#cpn').value.trim().toUpperCase();render(1)">Apply</button></div><p class="m">Try WELCOME200 (₹999+), SAVE10 or FREESHIP</p>`;
+const track=s=>s=='Cancelled'?'<p class="err"><b>Order cancelled</b></p>':`<div class="trk">${STAT.map((x,i)=>`<div class="${i<=STAT.indexOf(s)?'on':''}"><i></i>${x}</div>`).join('')}</div>`;
+function head(){$('#u').innerHTML=token?`Hi, ${esc(uname.split(' ')[0])} <a href="#/" onclick="signOut();return false" style="text-decoration:underline">Logout</a>`:'<a class="lb" href="#/login">Login</a>';$('#ad').innerHTML=admin?'<a href="#/admin">⚙ Admin</a>':''}
+function signOut(){token=uname='';admin=false;W=new Set();cp='';['t','u','a'].forEach(k=>localStorage.removeItem(k));if(location.hash=='#/'||!location.hash)render();else location.hash='#/'}
+async function loadUser(){if(token)try{W=new Set(await api('/wishlist'))}catch{}}
+function go(e){e.preventDefault();location.hash='#/?q='+encodeURIComponent($('#q').value);return false}
+function setQ(k,v){const p=new URLSearchParams(location.hash.split('?')[1]||'');v?p.set(k,v):p.delete(k);location.hash='#/?'+p}
+async function wish(id){if(!token)return location.hash='#/login';try{W=new Set(await api('/wishlist/'+id,'POST'));render(1)}catch(e){toast(e)}}
+async function auth(m,nx){try{const d=await api('/'+m,'POST',{name:$('#n')?.value,email:$('#e').value,password:$('#p').value});token=localStorage.t=d.token;uname=localStorage.u=d.name;admin=!!d.admin;localStorage.a=admin?'1':'0';await loadUser();head();location.hash='#/'+nx}catch(e){$('#er').textContent=e}}
+async function review(id){try{await api('/products/'+id+'/reviews','POST',{rating:$('#rv_r').value,text:$('#rv_t').value});P=await api('/products');toast('Thanks for your review');render(1)}catch(e){toast(e)}}
+async function placeOrder(){const a={};for(const k of['name','phone','address','city','pin'])a[k]=$('#a_'+k).value.trim();
+  try{const d=await api('/orders','POST',{items:cart,address:a,coupon:cp,payment:document.querySelector('input[name=pay]:checked').value});localStorage.addr=JSON.stringify(a);cart=[];cp='';saveCart();P=await api('/products');location.hash='#/done/'+d.orderId}catch(e){$('#er').textContent=e}}
+async function cancel(id){if(!confirm('Cancel this order?'))return;try{await api('/orders/'+id+'/cancel','POST');P=await api('/products');render(1)}catch(e){toast(e)}}
+function invoice(id){const o=O.find(x=>x.id==id),w=open('','_blank');w.document.write(`<title>Invoice #${o.id}</title><body style="font-family:sans-serif;max-width:640px;margin:30px auto"><h2>ShopKart - Invoice #${o.id}</h2><p>${esc(o.created)} UTC<br>${esc(o.address.name)}, ${esc(o.address.address)}, ${esc(o.address.city)} - ${esc(o.address.pin)}<br>Payment: ${esc(o.payment)}</p><table width="100%" border="1" cellspacing="0" cellpadding="6"><tr><th align="left">Item</th><th>Qty</th><th align="right">Amount</th></tr>${o.items.map(i=>`<tr><td>${esc(i.name)}</td><td align="center">${i.qty}</td><td align="right">${inr(i.price*i.qty)}</td></tr>`).join('')}</table><p>Delivery: ${o.shipping?inr(o.shipping):'Free'}<br>Discount${o.coupon?' ('+esc(o.coupon)+')':''}: -${inr(o.discount)}</p><h3>Total: ${inr(o.total)}</h3>`);w.document.close();w.print()}
+const adm=async fn=>{try{await fn();P=await api('/products');render(1)}catch(e){toast(e)}};
+const addP=()=>adm(()=>api('/admin/products','POST',{name:$('#n_n').value,description:$('#n_d').value,price:+$('#n_p').value,mrp:+$('#n_m').value,category:$('#n_c').value,emoji:$('#n_e').value,stock:+$('#n_s').value}));
+const saveP=id=>adm(()=>api('/admin/products/'+id,'PUT',{price:+$('#pp'+id).value,stock:+$('#ps'+id).value}));
+const delP=id=>confirm('Delete this product?')&&adm(()=>api('/admin/products/'+id,'DELETE'));
+const setStatus=(id,s)=>adm(()=>api('/admin/orders/'+id,'PUT',{status:s}));
+async function render(keep){
+  const[h,qs]=(location.hash.slice(1)||'/').split('?'),Q=new URLSearchParams(qs||''),v=$('#v'),c=Q.get('c')||'';head();
+  $('#nav').innerHTML=`<a class="${c?'':'on'}" href="#/">All</a>`+CATS.map(x=>`<a class="${c==x?'on':''}" href="#/?c=${x}">${x}</a>`).join('');
+  if(!keep)window.scrollTo(0,0);
+  try{
+    if(h=='/'){const s=Q.get('s')||'',q=Q.get('q')||'',[pmin,pmax]=(Q.get('p')||'-').split('-'),prm=new URLSearchParams({q,category:c,sort:s});
+      if(pmin)prm.set('minp',pmin);if(pmax)prm.set('maxp',pmax);if(Q.get('r'))prm.set('minr',Q.get('r'));if(Q.get('st'))prm.set('stock',1);
+      const list=await api('/products?'+prm),plain=!c&&!q&&!qs,rv=rec().map(id=>P.find(p=>p.id==id)).filter(Boolean);
+      v.innerHTML=(plain?'<div class="hero"><h1>Big Savings Sale</h1><p>Up to 60% off. Use code <b>WELCOME200</b>, <b>SAVE10</b> or <b>FREESHIP</b> at checkout.</p></div>':'')+
+      `<div class="bar"><b>${q?'Results for "'+esc(q)+'"':c||'All products'} <span class="m">(${list.length} items)</span></b><span class="fl"><select onchange="setQ('p',this.value)">${[['','Any price'],['0-500','Under ₹500'],['500-2000','₹500 - ₹2,000'],['2000-5000','₹2,000 - ₹5,000'],['5000-','Above ₹5,000']].map(o=>opt(o[0],o[1],Q.get('p')||'')).join('')}</select><select onchange="setQ('r',this.value)">${opt('','Any rating',Q.get('r')||'')}${opt('4','4★ & above',Q.get('r')||'')}</select><label><input type="checkbox" ${Q.get('st')?'checked':''} onchange="setQ('st',this.checked?1:'')"> In stock only</label><select onchange="setQ('s',this.value)">${[['','Relevance'],['price_asc','Price: low to high'],['price_desc','Price: high to low'],['rating','Top rated']].map(o=>opt(o[0],o[1],s)).join('')}</select></span></div><div class="grid">${list.map(card).join('')||'<p>No products found.</p>'}</div>`+
+      (plain&&rv.length?`<h3>Recently viewed</h3><div class="grid">${rv.map(card).join('')}</div>`:'')}
+    else if(h.startsWith('/p/')){const p=P.find(x=>x.id==h.slice(3));if(!p)throw'Product not found';
+      localStorage.r=JSON.stringify([p.id,...rec().filter(x=>x!=p.id)].slice(0,6));
+      const rv=await api('/products/'+p.id+'/reviews'),sim=P.filter(x=>x.category==p.category&&x.id!=p.id).slice(0,4),eta=new Date(Date.now()+4*864e5).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+      v.innerHTML=`<div class="box two"><div class="l"><div class="im" style="font-size:150px;padding:50px 0">${p.emoji}</div></div><div class="r"><h2>${esc(p.name)} <span class="hz" style="position:static" onclick="wish(${p.id})">${W.has(p.id)?'❤️':'🤍'}</span></h2>${stars(p)}<h2>${inr(p.price)} <s class="m" style="font-size:16px">${inr(p.mrp)}</s> <span class="g">${off(p)}% off</span></h2><p>${esc(p.description)}</p><p>${p.stock?(p.stock<6?'<b class="err">Only '+p.stock+' left</b>':'<b class="g">In stock</b>'):'<b class="err">Out of stock</b>'}</p><p>Delivery by <b>${eta}</b> · ${p.price>=499?'Free delivery':'₹40 delivery'}</p><button ${p.stock?'':'disabled'} onclick="add(${p.id})">Add to cart</button> <button class="buy" ${p.stock?'':'disabled'} onclick="add(${p.id});location.hash='#/cart'">Buy now</button></div></div>
+      <div class="box" style="margin:12px 0"><h3>Ratings & reviews</h3>${rv.map(r=>`<div class="row"><div><span class="rate">${r.rating} ★</span> <b>${esc(r.name)}</b><br>${esc(r.text)}</div></div>`).join('')||'<p class="m">No written reviews yet.</p>'}${token?`<h4>Write a review</h4><select id="rv_r">${[5,4,3,2,1].map(n=>`<option value="${n}">${n} ★</option>`).join('')}</select><textarea class="f" id="rv_t" rows="2" placeholder="Share your experience"></textarea><button onclick="review(${p.id})">Submit review</button>`:'<p><a class="g" href="#/login">Log in</a> to write a review.</p>'}</div>`+
+      (sim.length?`<h3>Similar products</h3><div class="grid">${sim.map(card).join('')}</div>`:'')}
+    else if(h=='/wishlist'){if(!token)return location.hash='#/login';const l=P.filter(p=>W.has(p.id));
+      v.innerHTML=`<h3>My wishlist (${l.length})</h3>`+(l.length?`<div class="grid">${l.map(card).join('')}</div>`:'<div class="box c">Your wishlist is empty. Tap 🤍 on a product to save it.</div>')}
+    else if(h=='/cart'){const t=totals();
+      if(!t.it.length)v.innerHTML='<div class="box c"><div style="font-size:70px">🛒</div><h3>Your cart is empty</h3><a class="lb" style="background:#2874f0;color:#fff" href="#/">Shop now</a></div>';
+      else{const qt=await getQuote();
+        v.innerHTML=`<div class="two"><div class="box l"><h3>My cart (${t.n})</h3>${t.it.map(i=>`<div class="row"><div class="im">${i.p.emoji}</div><div><a href="#/p/${i.p.id}">${esc(i.p.name)}</a><br><b>${inr(i.p.price)}</b> <s class="m">${inr(i.p.mrp)}</s></div><div><button class="sm" onclick="qty(${i.id},-1)">−</button> <b>${i.qty}</b> <button class="sm" onclick="qty(${i.id},1)">+</button> <button class="sm" onclick="del(${i.id})">Remove</button></div></div>`).join('')}<p><button class="buy" ${qt.bad?'disabled':''} onclick="location.hash='#/checkout'">Place order</button></p></div><div class="box r">${couponBox()}${summary(t,qt)}</div></div>`}}
+    else if(h=='/checkout'){if(!token)return location.hash='#/login?next=checkout';const t=totals();if(!t.it.length)return location.hash='#/cart';
+      const qt=await getQuote(),ad=JSON.parse(localStorage.addr||'{}'),val=k=>esc(ad[k]||'');
+      v.innerHTML=`<div class="two"><div class="box l"><h3>Delivery address</h3><input class="f" id="a_name" placeholder="Full name" value="${val('name')}"><input class="f" id="a_phone" placeholder="10-digit mobile number" maxlength="10" value="${val('phone')}"><textarea class="f" id="a_address" rows="3" placeholder="Address (house no, street, area)">${val('address')}</textarea><input class="f" id="a_city" placeholder="City" value="${val('city')}"><input class="f" id="a_pin" placeholder="6-digit pincode" maxlength="6" value="${val('pin')}"><p><b>Payment method</b> <span class="m">(demo, no real payment)</span><br><label><input type="radio" name="pay" value="COD" checked> Cash on Delivery</label><br><label><input type="radio" name="pay" value="UPI"> UPI</label><br><label><input type="radio" name="pay" value="Card"> Credit / Debit card</label></p><p class="err" id="er"></p><button class="buy" ${qt.bad?'disabled':''} onclick="placeOrder()">Confirm order</button></div><div class="box r">${couponBox()}${summary(t,qt)}</div></div>`}
+    else if(h.startsWith('/done/')){v.innerHTML=`<div class="box c"><div style="font-size:70px">✅</div><h2>Order placed!</h2><p>Your order #${esc(h.slice(6))} is confirmed.</p><a class="lb" style="background:#2874f0;color:#fff" href="#/orders">Track my order</a></div>`}
+    else if(h=='/orders'){if(!token)return location.hash='#/login?next=orders';O=await api('/orders');
+      v.innerHTML='<h3>My orders</h3>'+(O.map(x=>`<div class="box" style="margin-bottom:12px"><b>Order #${x.id}</b> <span class="m">${esc(x.created)} UTC · ${esc(x.payment)}</span> <b style="float:right">${inr(x.total)}</b>${track(x.status)}${x.items.map(i=>`<div class="row" style="justify-content:space-between"><div>${esc(i.name)} × ${i.qty}</div><b>${inr(i.price*i.qty)}</b></div>`).join('')}<p class="m">Deliver to ${esc(x.address.name)}, ${esc(x.address.address)}, ${esc(x.address.city)} - ${esc(x.address.pin)} · Phone ${esc(x.address.phone)}${x.coupon?' · Coupon '+esc(x.coupon)+' saved '+inr(x.discount):''}</p><button class="sm" onclick="invoice(${x.id})">Print invoice</button> ${x.status=='Placed'?`<button class="sm" onclick="cancel(${x.id})">Cancel order</button>`:''}</div>`).join('')||'<div class="box c">No orders yet.</div>')}
+    else if(h=='/admin'){if(!admin)return location.hash='#/';const[st,os]=await Promise.all([api('/admin/stats'),api('/admin/orders')]);
+      v.innerHTML=`<div class="stats">${[['Revenue',inr(st.revenue)],['Orders',st.orders],['Products',st.products],['Customers',st.users]].map(x=>`<div class="box"><div class="m">${x[0]}</div><h2 style="margin:0">${x[1]}</h2></div>`).join('')}</div>
+      <div class="box" style="margin:12px 0"><h3>Add product</h3><div class="af"><input class="f" id="n_n" placeholder="Name"><input class="f" id="n_d" placeholder="Description"><input class="f" id="n_p" type="number" placeholder="Price (₹)"><input class="f" id="n_m" type="number" placeholder="MRP (₹)"><select class="f" id="n_c">${CATS.map(x=>`<option>${x}</option>`).join('')}</select><input class="f" id="n_e" placeholder="Emoji, e.g. 📱"><input class="f" id="n_s" type="number" placeholder="Stock"></div><button onclick="addP()">Add product</button></div>
+      <div class="box" style="margin-bottom:12px"><h3>Products</h3>${P.map(p=>`<div class="row"><div>${p.emoji} ${esc(p.name)}</div><div>₹ <input class="f s" id="pp${p.id}" type="number" value="${p.price}"> Stock <input class="f s" id="ps${p.id}" type="number" value="${p.stock}"> <button class="sm" onclick="saveP(${p.id})">Save</button> <button class="sm" onclick="delP(${p.id})">Delete</button></div></div>`).join('')}</div>
+      <div class="box"><h3>All orders</h3>${os.map(o=>`<div class="row" style="justify-content:space-between;flex-wrap:wrap"><div>#${o.id} · ${esc(o.customer)} · ${inr(o.total)} · ${esc(o.payment)}<br><span class="m">${o.items.map(i=>esc(i.name)+' ×'+i.qty).join(', ')}</span></div><select onchange="setStatus(${o.id},this.value)">${[...STAT,'Cancelled'].map(x=>opt(x,x,o.status)).join('')}</select></div>`).join('')||'<p>No orders yet.</p>'}</div>`}
+    else if(h=='/login'){const su=Q.get('m')=='signup',nx=['checkout','orders'].includes(Q.get('next'))?Q.get('next'):'';
+      v.innerHTML=`<div class="auth"><div class="side"><h2>${su?"Looks like you're new here!":'Login'}</h2><p>${su?'Sign up with your email to get started.':'Get access to your orders, wishlist and cart.'}</p><div class="big">🛍️</div></div><div class="form">${su?'<input class="f" id="n" placeholder="Full name">':''}<input class="f" id="e" type="email" placeholder="Email"><input class="f" id="p" type="password" placeholder="Password (6+ characters)"><p class="err" id="er"></p><button class="buy" onclick="auth('${su?'register':'login'}','${nx}')">${su?'Create account':'Log in'}</button><a href="#/login?${su?'':'m=signup&'}next=${nx}">${su?'Existing user? Log in':'New to ShopKart? Create an account'}</a><p class="m" style="font-size:12px">Demo admin: admin@shopkart.com / admin123</p></div></div>`}
+  }catch(e){if(e=='Please log in'){signOut();return location.hash='#/login'}v.innerHTML='<p class="err">'+esc(e)+'</p>'}
+}
+addEventListener('hashchange',()=>render());
+(async()=>{try{P=await api('/products')}catch{}await loadUser();saveCart();render()})();
+</script></html>
